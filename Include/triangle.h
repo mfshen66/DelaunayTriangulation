@@ -281,6 +281,13 @@ struct triangulateio {
 
 #define VOID int
 
+#ifdef WIN32
+typedef unsigned long PTR;
+#else
+typedef unsigned long long PTR;
+#endif // WIN32
+
+
 #ifdef ANSI_DECLARATORS
 void triangulate(char *, struct triangulateio *, struct triangulateio *,
                  struct triangulateio *);
