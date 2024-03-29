@@ -3891,19 +3891,18 @@ struct memorypool *pool;
 #endif /* not ANSI_DECLARATORS */
 
 {
-  unsigned long alignptr;
-
   pool->items = 0;
   pool->maxitems = 0;
 
   /* Set the currently active block. */
   pool->nowblock = pool->firstblock;
   /* Find the first item in the pool.  Increment by the size of (VOID *). */
-  alignptr = (unsigned long) (pool->nowblock + 1);
+  unsigned long long alignptr = (unsigned long long)(*(pool->nowblock) + 1);
+  //alignptr = (unsigned long) (pool->nowblock + 1);
   /* Align the item on an `alignbytes'-byte boundary. */
   pool->nextitem = (VOID *)
-    (alignptr + (unsigned long) pool->alignbytes -
-     (alignptr % (unsigned long) pool->alignbytes));
+    (alignptr + (unsigned long long) pool->alignbytes -
+     (alignptr % (unsigned long long) pool->alignbytes));
   /* There are lots of unallocated items left in this block. */
   pool->unallocateditems = pool->itemsfirstblock;
   /* The stack of deallocated items is empty. */
@@ -3963,11 +3962,11 @@ int alignment;
   /* Allocate a block of items.  Space for `itemsfirstblock' items and one  */
   /*   pointer (to point to the next block) are allocated, as well as space */
   /*   to ensure alignment of the items.                                    */
-  pool->firstblock = (VOID **)
-    trimalloc(pool->itemsfirstblock * pool->itembytes + (int) sizeof(VOID *) +
-              pool->alignbytes);
+  VOID* mempool = trimalloc(pool->itemsfirstblock * pool->itembytes + (int)sizeof(VOID*) +
+      pool->alignbytes);
+  pool->firstblock = &mempool;
   /* Set the next block pointer to NULL. */
-  *(pool->firstblock) = (VOID *) NULL;
+  //*(pool->firstblock) = (VOID *) NULL;
   poolrestart(pool);
 }
 
@@ -4092,16 +4091,16 @@ struct memorypool *pool;
 #endif /* not ANSI_DECLARATORS */
 
 {
-  unsigned long alignptr;
+  unsigned long long alignptr;
 
   /* Begin the traversal in the first block. */
   pool->pathblock = pool->firstblock;
   /* Find the first item in the block.  Increment by the size of (VOID *). */
-  alignptr = (unsigned long) (pool->pathblock + 1);
+  alignptr = (unsigned long long) (pool->pathblock + 1);
   /* Align with item on an `alignbytes'-byte boundary. */
   pool->pathitem = (VOID *)
-    (alignptr + (unsigned long) pool->alignbytes -
-     (alignptr % (unsigned long) pool->alignbytes));
+    (alignptr + (unsigned long long) pool->alignbytes -
+     (alignptr % (unsigned long long) pool->alignbytes));
   /* Set the number of items left in the current block. */
   pool->pathitemsleft = pool->itemsfirstblock;
 }
@@ -4129,7 +4128,7 @@ struct memorypool *pool;
 
 {
   VOID *newitem;
-  unsigned long alignptr;
+  unsigned long long alignptr;
 
   /* Stop upon exhausting the list of items. */
   if (pool->pathitem == pool->nextitem) {
@@ -4141,11 +4140,11 @@ struct memorypool *pool;
     /* Find the next block. */
     pool->pathblock = (VOID **) *(pool->pathblock);
     /* Find the first item in the block.  Increment by the size of (VOID *). */
-    alignptr = (unsigned long) (pool->pathblock + 1);
+    alignptr = (unsigned long long) (pool->pathblock + 1);
     /* Align with item on an `alignbytes'-byte boundary. */
     pool->pathitem = (VOID *)
-      (alignptr + (unsigned long) pool->alignbytes -
-       (alignptr % (unsigned long) pool->alignbytes));
+      (alignptr + (unsigned long long) pool->alignbytes -
+       (alignptr % (unsigned long long) pool->alignbytes));
     /* Set the number of items left in the current block. */
     pool->pathitemsleft = pool->itemsperblock;
   }
@@ -4197,16 +4196,16 @@ int subsegbytes;
 #endif /* not ANSI_DECLARATORS */
 
 {
-  unsigned long alignptr;
+  unsigned long long alignptr;
 
   /* Set up `dummytri', the `triangle' that occupies "outer space." */
   m->dummytribase = (triangle *) trimalloc(trianglebytes +
                                            m->triangles.alignbytes);
   /* Align `dummytri' on a `triangles.alignbytes'-byte boundary. */
-  alignptr = (unsigned long) m->dummytribase;
+  alignptr = (unsigned long long) m->dummytribase;
   m->dummytri = (triangle *)
-    (alignptr + (unsigned long) m->triangles.alignbytes -
-     (alignptr % (unsigned long) m->triangles.alignbytes));
+    (alignptr + (unsigned long long) m->triangles.alignbytes -
+     (alignptr % (unsigned long long) m->triangles.alignbytes));
   /* Initialize the three adjoining triangles to be "outer space."  These  */
   /*   will eventually be changed by various bonding operations, but their */
   /*   values don't really matter, as long as they can legally be          */
@@ -4226,10 +4225,10 @@ int subsegbytes;
     m->dummysubbase = (subseg *) trimalloc(subsegbytes +
                                            m->subsegs.alignbytes);
     /* Align `dummysub' on a `subsegs.alignbytes'-byte boundary. */
-    alignptr = (unsigned long) m->dummysubbase;
+    alignptr = (unsigned long long) m->dummysubbase;
     m->dummysub = (subseg *)
-      (alignptr + (unsigned long) m->subsegs.alignbytes -
-       (alignptr % (unsigned long) m->subsegs.alignbytes));
+      (alignptr + (unsigned long long) m->subsegs.alignbytes -
+       (alignptr % (unsigned long long) m->subsegs.alignbytes));
     /* Initialize the two adjoining subsegments to be the omnipresent      */
     /*   subsegment.  These will eventually be changed by various bonding  */
     /*   operations, but their values don't really matter, as long as they */

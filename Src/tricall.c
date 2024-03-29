@@ -27,6 +27,10 @@
 #define REAL double
 #endif /* not SINGLE */
 
+#ifndef VOID
+#define VOID int
+#endif // !VOID
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "triangle.h"
